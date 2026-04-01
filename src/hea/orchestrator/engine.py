@@ -48,8 +48,7 @@ class Orchestrator:
         user_prompt = build_user_prompt("/start")
         llm_resp = await self._llm.complete(system_prompt, user_prompt)
 
-        greeting = f"{self._config.disclaimer.strip()}\n\n{llm_resp.user_message}"
-        return session, greeting
+        return session, llm_resp.user_message
 
     async def process_message(
         self, session: Session, user_message: str

@@ -194,4 +194,4 @@ class TestOrchestrator:
         session, msg = await orch.start_session(chat_id=42)
         assert session.chat_id == 42
         assert session.current_node_id == "start"
-        assert msg  # should have a greeting/disclaimer + first question
+        assert msg == "Hello! How old are you?"

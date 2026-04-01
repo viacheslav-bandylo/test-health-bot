@@ -9,12 +9,15 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message
 
 from hea.assessment.loader import load_assessment
+from hea.bot.formatting import (
+    escape_html,
+    generate_html_report,
+)
 from hea.bot.rate_limiter import RateLimiter, validate_message_length
 from hea.llm.client import LLMClient
 from hea.models.assessment import AssessmentConfig
 from hea.models.session import SessionState
 from hea.orchestrator.engine import Orchestrator
-from hea.report.text_report import generate_report
 from hea.settings import Settings
 from hea.storage.repository import SessionRepository
 
@@ -86,15 +89,17 @@ async def handle_start(message: Message) -> None:
     chat_id = message.chat.id
 
     if _rate_limiter and not _rate_limiter.is_allowed(chat_id):
-        await message.answer("Too many requests. Please wait a moment.")
+        await message.answer(
+            "Too many requests. Please wait a moment.", parse_mode="HTML"
+        )
         return
 
     # Delete any existing session
     await repo.delete(chat_id)
 
-    session, greeting = await orchestrator.start_session(chat_id=chat_id)
+    session, llm_message = await orchestrator.start_session(chat_id=chat_id)
     await repo.save(session)
-    await message.answer(greeting)
+    await message.answer(escape_html(llm_message), parse_mode="HTML")
 
 
 @router.message()
@@ -108,17 +113,22 @@ async def handle_message(message: Message) -> None:
     chat_id = message.chat.id
 
     if _rate_limiter and not _rate_limiter.is_allowed(chat_id):
-        await message.answer("Too many requests. Please wait a moment.")
+        await message.answer(
+            "Too many requests. Please wait a moment.", parse_mode="HTML"
+        )
         return
 
     session = await repo.get_by_chat_id(chat_id)
     if session is None:
-        await message.answer("Please send /start to begin an assessment.")
+        await message.answer(
+            "Please send /start to begin an assessment.", parse_mode="HTML"
+        )
         return
 
     if session.state == SessionState.COMPLETED:
         await message.answer(
-            "Your assessment is already completed. Send /start to begin a new one."
+            "Your assessment is already completed. Send /start to begin a new one.",
+            parse_mode="HTML",
         )
         return
 
@@ -128,7 +138,9 @@ async def handle_message(message: Message) -> None:
     await repo.save(new_session)
 
     if new_session.state == SessionState.COMPLETED:
-        report = generate_report(config, new_session)
-        await message.answer(f"{response_text}\n\n{report}")
+        report = generate_html_report(config, new_session)
+        await message.answer(
+            f"{escape_html(response_text)}\n\n{report}", parse_mode="HTML"
+        )
     else:
-        await message.answer(response_text)
+        await message.answer(escape_html(response_text), parse_mode="HTML")

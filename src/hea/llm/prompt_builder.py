@@ -52,6 +52,14 @@ def build_system_prompt(config: AssessmentConfig, session: Session) -> str:
 ## Recent History:
 {history_text}
 
+## Formatting Policy:
+In the "user_message" field, when you present answer choices you MUST:
+1. Use human-friendly labels (e.g. "Under 30" not "under_30")
+2. Put each option on its own line using a literal newline character in the JSON string
+3. Prefix each option with "• "
+Example user_message: "Which age group do you fall into?\n\n• Under 30\n• 30 to 50\n• Over 50"
+NEVER list options inline separated by commas or dots.
+
 ## Language Policy:
 You MUST always respond in English only. If the user writes in a language other than English, set "needs_clarification" to true and politely ask them to rephrase in English. Do NOT attempt to classify or score non-English messages.
 
