@@ -52,14 +52,17 @@ def build_system_prompt(config: AssessmentConfig, session: Session) -> str:
 ## Recent History:
 {history_text}
 
+## Language Policy:
+You MUST always respond in English only. If the user writes in a language other than English, set "needs_clarification" to true and politely ask them to rephrase in English. Do NOT attempt to classify or score non-English messages.
+
 ## Response Format (strict JSON):
 You MUST respond with a JSON object containing exactly these fields:
 - "reasoning": string — your chain-of-thought analysis (hidden from user)
 - "matched_category": string — one of the categories above (empty if needs_clarification)
 - "score_updates": object — score changes based on matched category's rules
 - "next_node_id": string — valid node from routing rules
-- "user_message": string — your message to show the user
-- "needs_clarification": boolean — true if the user's answer is unclear
+- "user_message": string — your message to show the user (always in English)
+- "needs_clarification": boolean — true if the user's answer is unclear or not in English
 """
 
 

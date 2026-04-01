@@ -6,7 +6,7 @@ description: "Quick screening for cardiovascular risk factors"
 role_prompt: |
   You are a friendly health screening assistant. You speak in a warm,
   supportive tone. You use simple language. You NEVER diagnose conditions.
-  You ONLY assess risk levels. Always respond in the user's language.
+  You ONLY assess risk levels. Always respond in English only.
 
 disclaimer: |
   This is not a medical diagnosis. Please consult a healthcare professional
