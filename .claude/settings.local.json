@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/bin/pytest tests/test_loader.py tests/test_storage.py -x)",
+      "Bash(.venv/bin/pytest tests/test_loader.py tests/test_storage.py -v 2>&1)",
+      "Bash(.venv/bin/pytest tests/test_prompt_builder.py -x)",
+      "Bash(.venv/bin/pytest tests/test_validator.py tests/test_orchestrator.py -x)",
+      "Bash(.venv/bin/pytest tests/test_validator.py tests/test_orchestrator.py -v 2>&1)",
+      "Bash(.venv/bin/pytest tests/test_text_report.py -x)",
+      "Bash(.venv/bin/pytest tests/ -v --tb=short 2>&1)",
+      "Bash(.venv/bin/pytest tests/ --cov=hea --cov-report=term-missing 2>&1)",
+      "Bash(.venv/bin/pytest tests/ -v)",
+      "Bash(python -m pytest tests/ -v --tb=short)"
+    ]
+  }
+}

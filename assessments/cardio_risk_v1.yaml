@@ -1,0 +1,86 @@
+id: "cardio_risk"
+version: "1.0"
+title: "Cardiovascular Risk Assessment"
+description: "Quick screening for cardiovascular risk factors"
+
+role_prompt: |
+  You are a friendly health screening assistant. You speak in a warm,
+  supportive tone. You use simple language. You NEVER diagnose conditions.
+  You ONLY assess risk levels. Always respond in the user's language.
+
+disclaimer: |
+  This is not a medical diagnosis. Please consult a healthcare professional
+  for medical advice.
+
+scoring:
+  categories:
+    - id: "cv_risk"
+      name: "Cardiovascular Risk Score"
+      initial: 0
+      min: 0
+      max: 20
+
+nodes:
+  - id: "start"
+    type: "question"
+    instruction: |
+      Ask the user about their age range. Categories:
+      - under_30: age below 30
+      - 30_to_50: age between 30 and 50
+      - over_50: age above 50
+    scoring_rules:
+      - match: "under_30"
+        update: { "cv_risk": 0 }
+      - match: "30_to_50"
+        update: { "cv_risk": 2 }
+      - match: "over_50"
+        update: { "cv_risk": 4 }
+    routing:
+      - match: "*"
+        next: "smoking"
+
+  - id: "smoking"
+    type: "question"
+    instruction: |
+      Ask if the user smokes. Categories:
+      - never: never smoked
+      - former: used to smoke but quit
+      - current: currently smokes
+    scoring_rules:
+      - match: "never"
+        update: { "cv_risk": 0 }
+      - match: "former"
+        update: { "cv_risk": 1 }
+      - match: "current"
+        update: { "cv_risk": 4 }
+    routing:
+      - match: "*"
+        next: "exercise"
+
+  - id: "exercise"
+    type: "question"
+    instruction: |
+      Ask about physical activity level. Categories:
+      - active: exercises 3+ times per week
+      - moderate: exercises 1-2 times per week
+      - sedentary: rarely or never exercises
+    scoring_rules:
+      - match: "active"
+        update: { "cv_risk": 0 }
+      - match: "moderate"
+        update: { "cv_risk": 1 }
+      - match: "sedentary"
+        update: { "cv_risk": 3 }
+    routing:
+      - match: "*"
+        next: "result"
+
+  - id: "result"
+    type: "terminal"
+    instruction: |
+      Based on the total cv_risk score, provide a summary:
+      - 0-3: Low risk. Encourage maintaining healthy habits.
+      - 4-7: Moderate risk. Suggest lifestyle improvements.
+      - 8+: Elevated risk. Strongly recommend consulting a doctor.
+    scoring_rules: []
+    routing: []
